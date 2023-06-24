@@ -1,4 +1,16 @@
 <%= @user.email %>
-<%= link_to 'Follow', user_relationships_path(@user.id), method: :post, class: 'btn btn-danger' %>
+<% if @rel.present? %>
+  <%= form_with(model: @rel, url: relationship_path(@rel), method: :delete) do |form| %>
+    <%= form.hidden_field :authenticity_token, value: form_authenticity_token %>
+    <%= form.submit "Unfollow", class: 'btn btn-danger' %>
+  <% end %>
+<% else %>
+  <%= form_with(model: Relationship.new, url: user_relationships_path(@user)) do |form| %>
+    <%= form.hidden_field :authenticity_token, value: form_authenticity_token %>
+    <%= form.hidden_field :follower_id, value: current_user.id %>
+    <%= form.hidden_field :followed_id, value: @user.id %>
+    <%= form.submit "Follow", class: 'btn btn-danger' %>
+  <% end %>
+<% end %>
 <h2>Followers: <%= @user.followers.count %></h2>
 <h2>Following: <%= @user.following.count %></h2>
